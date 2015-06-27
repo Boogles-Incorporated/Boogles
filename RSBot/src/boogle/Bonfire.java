@@ -19,7 +19,7 @@ public class Bonfire extends Task<ClientContext> {
 	@Override
 	public boolean activate() {
 		if(!isBurning)
-			return ctx.backpack.select().id(logID).shuffle().count()>0;
+			return ctx.backpack.select().id(logID).count()>0;
 		else
 			return ctx.objects.select().id(fireID).within(3.0).isEmpty();
 	}
@@ -27,7 +27,7 @@ public class Bonfire extends Task<ClientContext> {
 	@Override
 	public void execute() {
 		if(ctx.objects.select().id(fireID).within(3.0).isEmpty()){
-			ctx.backpack.poll().interact("Light");
+			ctx.backpack.shuffle().poll().interact("Light");
 			ctx.backpack.peek().hover();
 			Condition.wait(new Condition.Check() {
 				@Override
