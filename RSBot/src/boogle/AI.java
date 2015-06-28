@@ -15,7 +15,7 @@ public class AI extends Task<ClientContext> {
 		if(rand(0,rand(7,10)) != 0)
 			return;
 		
-		try{switch(pick(.3,.2,.5)){
+		try{switch(pick(.3,.1,.6)){
 			case 0:
 				(new Thread(new cameraPattern())).start();
 				(new Thread(new mousePattern())).start();
@@ -48,7 +48,7 @@ public class mousePattern implements Runnable{
 						}
 				break;
 				case 1:
-					ctx.objects.viewable().poll().click(false);
+					ctx.objects.viewable().shuffle().poll().click(false);
 				break;
 				case 2:
 					ctx.input.move(rand(10,790), rand(10,590));

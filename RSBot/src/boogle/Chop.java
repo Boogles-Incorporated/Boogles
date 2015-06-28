@@ -25,6 +25,14 @@ public class Chop extends Task<ClientContext> {
 
 	@Override
 	public void execute() {
+		if(Condition.wait(new Condition.Check() {
+			@Override
+			public boolean poll() {
+				return ctx.players.local().animation()!=-1;
+			}
+		}, 200, 5))
+			return;
+		
 		GameObject tree = ctx.objects.nearest().limit(2).shuffle().poll();
 		if(tree.inViewport()){
 			tree.interact("Chop");
@@ -45,7 +53,6 @@ public class Chop extends Task<ClientContext> {
 			if(!tree.inViewport())
 				ctx.movement.step(tree);
 		}
-		
 	}
 
 	@Override
