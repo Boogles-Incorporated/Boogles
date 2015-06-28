@@ -10,7 +10,7 @@ import org.powerbot.script.rt6.ClientContext;
 @Script.Manifest(name = "PB Woodcutter", description = "Project Boogle :: Woodcutter")
 public class PBWoodcutter extends PollingScript<ClientContext> {
 
-	private final Task<ClientContext> ai = new AI(ctx);
+	private final HumanAction humanAction = new HumanAction(ctx);
 	
 	private List<Task<ClientContext>> tasks = new ArrayList<Task<ClientContext>>();
 	
@@ -28,6 +28,6 @@ public class PBWoodcutter extends PollingScript<ClientContext> {
 				return;
 			}
 		}
-		ai.execute();
+		humanAction.perform();
 	}
 }
