@@ -11,6 +11,9 @@ public class Bonfire extends Task<ClientContext> {
 	
 	//Whether the player is burning logs
 	private boolean isBurning;
+	
+	//Testing how well this works
+	private final HumanAction humanAction;
 
 	/**
 	 * Constructs a Bonfire Task which must wait for the enqueue condition to become active
@@ -25,6 +28,7 @@ public class Bonfire extends Task<ClientContext> {
 		this.logID=logID;
 		this.fireID=fireID;
 		this.isBurning=false;
+		this.humanAction =  new HumanAction(ctx);
 	}
 
 	@Override
@@ -40,7 +44,7 @@ public class Bonfire extends Task<ClientContext> {
 		//Check for nearby fires
 		if(ctx.objects.select().id(fireID).within(3.0).isEmpty()){
 			//No fire, light log
-			ctx.backpack.shuffle().poll().interact("Light");
+			ctx.backpack.limit(8).shuffle().poll().interact("Light");
 			//Hover to anticipate bonfire interaction
 			ctx.backpack.peek().hover();
 			//Wait for lighting animation
@@ -50,12 +54,20 @@ public class Bonfire extends Task<ClientContext> {
 					return ctx.players.local().animation()==25600;
 				}
 			}, 300, 6))
+				Condition.wait(new Condition.Check() {
+					@Override
+					public boolean poll() {
+						humanAction.perform();
+						return !ctx.objects.select().id(fireID).within(3.0).isEmpty();
+					}
+				}, 500, 20);
+			else
 				//Lighting failed; end execution
 				return;
 		}
 		
 		//Craft logs
-		ctx.backpack.poll().interact("Craft");
+		ctx.backpack.peek().interact("Craft");
 		//Move then click to "Add to bonfire" interface |TODO: use widgets instead of hard-coded position
 		ctx.input.move(rand(500,550), rand(285,335));
 		ctx.input.click(true);
@@ -76,7 +88,11 @@ public class Bonfire extends Task<ClientContext> {
 
 	@Override
 	public boolean dequeue() {
-		return ctx.backpack.select().id(logID).count()==0;
+		if(ctx.backpack.select().id(logID).count()==0){
+			isBurning=false;
+			return true;
+		}	
+		return false;
 	}
 
 }

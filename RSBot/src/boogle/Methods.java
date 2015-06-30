@@ -32,5 +32,14 @@ public class Methods {
 		
 		return percentages.length-1;
 	}
+	
+	/**
+	 * Chooses a boolean at random with the specified probability
+	 * @param trueProb Probability [0,1) of returning True
+	 * @return True if random sample is less than trueProb, else False
+	 */
+	public static boolean flipCoin(double trueProb){
+		return Math.random()<trueProb;
+	}
 
 }

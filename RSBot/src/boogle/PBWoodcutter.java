@@ -16,6 +16,7 @@ public class PBWoodcutter extends PollingScript<ClientContext> {
 	
 	@Override
 	public void start(){
+		//Willow
 		tasks.add(new Chop(ctx, 38616,38627));
 		tasks.add(new Bonfire(ctx, 1519, 70758));
 	}
@@ -31,3 +32,4 @@ public class PBWoodcutter extends PollingScript<ClientContext> {
 		humanAction.perform();
 	}
 }
+
