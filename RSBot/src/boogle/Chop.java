@@ -1,7 +1,7 @@
 package boogle;
 
 import static boogle.Methods.rand;
-import static boogle.Methods.flipCoin;
+import static boogle.Methods.choose;
 
 import org.powerbot.script.Condition;
 import org.powerbot.script.rt6.ClientContext;
@@ -32,14 +32,16 @@ public class Chop extends Task<ClientContext> {
 	@Override
 	public void execute() {
 		//Select one of the nearest two trees at random
-		GameObject tree = ctx.objects.nearest().limit(2).shuffle().poll();
+		GameObject tree = choose(.8) ? 
+				ctx.objects.nearest().limit(2).poll() : 
+				ctx.objects.nearest().limit(2).reverse().poll();
 		
 		//Look for tree in view
 		if(tree.inViewport()){
 			//Click tree
 			tree.interact("Chop");
 			//Move mouse after click
-			ctx.input.move(rand(10,790), rand(10,590));
+			if(choose(.7)){ctx.input.move(rand(10,790), rand(10,590)); Condition.sleep(215);}
 			//Check for animation to avoid double clicking
 			Condition.wait(new Condition.Check() {
 				@Override
@@ -51,7 +53,7 @@ public class Chop extends Task<ClientContext> {
 				
 		}else{
 			//Check camera zoom
-			if(ctx.camera.z()>-3000)
+			if(ctx.camera.z()>-5000)
 				ctx.players.local().hover();
 				//Zoom out |TODO: Make concurrent
 				for(int i=rand(30,50); i>0; --i){
@@ -60,7 +62,7 @@ public class Chop extends Task<ClientContext> {
 				}
 			
 			//Testing how well this works
-			if(flipCoin(.6)) humanAction.concurrentMouse();
+			if(choose(.6)) humanAction.concurrentMouse();
 			
 			//Turn towards tree
 			ctx.camera.turnTo(tree);

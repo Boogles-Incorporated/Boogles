@@ -1,7 +1,5 @@
 package boogle;
 
-import static boogle.Methods.rand;
-
 import org.powerbot.script.Condition;
 import org.powerbot.script.rt6.ClientContext;
 
@@ -45,7 +43,7 @@ public class Bonfire extends Task<ClientContext> {
 		if(ctx.objects.select().id(fireID).within(3.0).isEmpty()){
 			//No fire, light log
 			ctx.backpack.limit(8).shuffle().poll().interact("Light");
-			//Hover to anticipate bonfire interaction
+			//Hover to anticipate bonfire
 			ctx.backpack.peek().hover();
 			//Wait for lighting animation
 			if(Condition.wait(new Condition.Check() {
@@ -53,25 +51,35 @@ public class Bonfire extends Task<ClientContext> {
 				public boolean poll() {
 					return ctx.players.local().animation()==25600;
 				}
-			}, 300, 6))
+			}, 300, 6)){
 				Condition.wait(new Condition.Check() {
+					private int polls=0;
 					@Override
 					public boolean poll() {
-						humanAction.perform();
+						if(this.polls++>4) humanAction.perform();
 						return !ctx.objects.select().id(fireID).within(3.0).isEmpty();
 					}
-				}, 500, 20);
-			else
+				}, 300, 30);
+				
+			}else
 				//Lighting failed; end execution
 				return;
 		}
 		
 		//Craft logs
-		ctx.backpack.peek().interact("Craft");
-		//Move then click to "Add to bonfire" interface |TODO: use widgets instead of hard-coded position
-		ctx.input.move(rand(500,550), rand(285,335));
-		ctx.input.click(true);
+		ctx.backpack.poll().interact("Craft");
 		
+		//Wait for "Add to bonfire" interface 
+		Condition.wait(new Condition.Check() {
+			@Override
+			public boolean poll() {
+				return ctx.widgets.widget(1179).component(40).visible();
+			}
+		}, 300, 6);
+		
+		//Add to bonfire
+		ctx.widgets.widget(1179).component(40).interact("");
+				
 		//Wait for bonfire animation to determine whether player isBurning
 		isBurning=Condition.wait(new Condition.Check() {
 			@Override

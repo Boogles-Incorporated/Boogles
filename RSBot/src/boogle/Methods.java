@@ -38,8 +38,8 @@ public class Methods {
 	 * @param trueProb Probability [0,1) of returning True
 	 * @return True if random sample is less than trueProb, else False
 	 */
-	public static boolean flipCoin(double trueProb){
-		return Math.random()<trueProb;
+	public static boolean choose(double trueProb){
+		return Math.random()<=trueProb;
 	}
 
 }

@@ -35,18 +35,9 @@ public class HumanAction extends AbstractHuman<ClientContext>{
 	}
 
 	public void mouse(){
-		switch(pick(.15,.025,.8,.025)){
+		switch(pick(.025,.025,.925,.025)){
 			case 0:
-				if(ctx.camera.z()>-4200)
-					for(int i=rand(10,60); i>0; --i){
-						ctx.input.scroll(true);
-						Condition.sleep(15);
-					}
-				else
-					for(int i=rand(10,60); i>0; --i){
-						ctx.input.scroll(false);
-						Condition.sleep(15);
-					}
+				ctx.npcs.viewable().shuffle().poll().click(false);
 			break;
 			case 1:
 				ctx.objects.viewable().shuffle().poll().click(false);
@@ -62,26 +53,72 @@ public class HumanAction extends AbstractHuman<ClientContext>{
 	}
 	
 	public void camera(){
-		switch(pick(.4,.45,.15)){
+		switch(pick(.15,.3,.1,.05,.05,.3,.05)){
 			case 0:
-				ctx.camera.pitch(rand(40,80));
+				cameraPitch();
 			break;
 			case 1:
-				ctx.camera.angle(rand(0,360));
+				cameraAngle();
 			break;
 			case 2:
-				if(rand(0,2)==0)
+				cameraZoom();
+			break;
+			case 3:
+				concurrentZoom();
+				cameraAngle();
+			break;
+			case 4:
+				concurrentZoom();
+				cameraPitch();
+			break;
+			case 5:
+				concurrentPitch();
+				cameraAngle();
+			break;
+			case 6:
+				concurrentPitch();
+				concurrentZoom();
+				cameraAngle();
+			break;
+		}
+	}
+	
+	public void cameraPitch(){
+		ctx.camera.pitch(rand(40,80));
+	}
+	
+	public void cameraAngle(){
+		switch(pick(.9,.1)){
+			case 0:
+				ctx.camera.angle(rand(0,360));
+			break;
+			case 1:
+				if(choose(.5))
 					for(int i=rand(2,4); i>0; --i){
-						ctx.camera.angle(ctx.camera.yaw()+rand(90,150));
-						Condition.sleep(rand(500,700));
+						ctx.camera.angle(ctx.camera.yaw()+rand(120,270));
+						Condition.sleep(rand(100,800));
 					}
 				else
 					for(int i=rand(2,4); i>0; --i){
-						ctx.camera.angle(ctx.camera.yaw()-rand(90,150));
-						Condition.sleep(rand(500,700));
+						ctx.camera.angle(ctx.camera.yaw()-rand(120,270));
+						Condition.sleep(rand(100,800));
 					}
 			break;
 		}
+	}
+	
+	public void cameraZoom(){
+		int delay=rand(10,20);
+		if(ctx.camera.z()>-9000)
+			for(int i=rand(10,60); i>0; --i){
+				ctx.input.scroll(true);
+				Condition.sleep(delay);
+			}
+		else
+			for(int i=rand(10,60); i>0; --i){
+				ctx.input.scroll(false);
+				Condition.sleep(delay);
+			}
 	}
 	
 	public void idle(){
@@ -98,6 +135,33 @@ public class HumanAction extends AbstractHuman<ClientContext>{
 				ctx.input.hop(rand(10,790), rand(10,590));
 			break;
 		}
+	}
+	
+	public void concurrentAngle(){
+		(new Thread(new Runnable(){
+			@Override
+			public void run() {
+				cameraAngle();
+			}
+		})).start();
+	}
+	
+	public void concurrentPitch(){
+		(new Thread(new Runnable(){
+			@Override
+			public void run() {
+				cameraPitch();
+			}
+		})).start();
+	}
+	
+	public void concurrentZoom(){
+		(new Thread(new Runnable(){
+			@Override
+			public void run() {
+				cameraZoom();
+			}
+		})).start();
 	}
 	
 	public void concurrentMouse(){
